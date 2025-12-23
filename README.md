@@ -108,7 +108,7 @@ node server.js
 Servidor rodando por padrão em:
 
 ```
-http://localhost:3001
+http://localhost:4001
 ```
 
 (WebSocket ativo no mesmo host)
@@ -133,7 +133,7 @@ npm start
 Aplicação disponível em:
 
 ```
-http://localhost:3000
+http://localhost:4000
 ```
 
 ---
