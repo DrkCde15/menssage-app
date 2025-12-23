@@ -1,4 +1,4 @@
-// npm install express sqlite3 ws cors body-parser
+// Instalar dependências: npm install express sqlite3 ws cors body-parser
 
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();

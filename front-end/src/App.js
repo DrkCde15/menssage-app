@@ -1,6 +1,8 @@
-//npm install lucide-react 
+// Instalar dependências: npm install lucide-react
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, User, LogOut, MessageSquare } from 'lucide-react';
+import './App.css';
 
 const API_URL = 'http://localhost:4001/api';
 const WS_URL = 'ws://localhost:4002';
@@ -127,33 +129,52 @@ export default function MessagingApp() {
   // Login Screen
   if (!currentUser) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-600">
-        <div className="bg-white p-8 rounded-2xl shadow-2xl w-96">
-          <div className="text-center mb-6">
-            <MessageSquare size={48} className="mx-auto text-blue-600 mb-2" />
-            <h1 className="text-2xl font-bold text-gray-800">App de Mensagens</h1>
+      <div className="login-container">
+        <div className="login-bg-overlay"></div>
+        <div className="login-bg-effect">
+          <div className="login-bg-circle-1"></div>
+          <div className="login-bg-circle-2"></div>
+        </div>
+        
+        <div className="login-card">
+          <div className="login-header">
+            <div className="login-icon">
+              <MessageSquare />
+            </div>
+            <h1 className="login-title">ChatApp</h1>
+            <p className="login-subtitle">Conecte-se com seus amigos</p>
           </div>
-          <form onSubmit={handleLogin}>
-            <input
-              type="text"
-              placeholder="Usuário (usuario1 ou usuario2)"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-3 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-            />
-            <input
-              type="password"
-              placeholder="Senha (123456)"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 mb-6 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-            />
-            <button
-              type="submit"
-              className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
-            >
+          
+          <form onSubmit={handleLogin} className="login-form">
+            <div className="form-group">
+              <label className="form-label">Usuário</label>
+              <input
+                type="text"
+                placeholder="usuario1 ou usuario2"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="form-input"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label className="form-label">Senha</label>
+              <input
+                type="password"
+                placeholder="Digite sua senha"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="form-input"
+              />
+            </div>
+            
+            <button type="submit" className="login-button">
               Entrar
             </button>
+            
+            <p className="login-hint">
+              Use: usuario1 ou usuario2 | Senha: 123456
+            </p>
           </form>
         </div>
       </div>
@@ -162,37 +183,48 @@ export default function MessagingApp() {
 
   // Main App Screen
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="chat-container">
       {/* Sidebar - Contacts */}
-      <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
-        <div className="bg-blue-600 text-white p-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <User size={24} />
-            <span className="font-semibold">{currentUser.username}</span>
+      <div className="sidebar">
+        <div className="sidebar-header">
+          <div className="sidebar-user">
+            <div className="sidebar-avatar">
+              <User />
+            </div>
+            <div className="sidebar-user-info">
+              <span className="sidebar-username">{currentUser.username}</span>
+              <div className="sidebar-status">
+                <div className="status-dot"></div>
+                <span className="sidebar-status-text">Online</span>
+              </div>
+            </div>
           </div>
-          <button
-            onClick={() => setCurrentUser(null)}
-            className="hover:bg-blue-700 p-2 rounded-full transition-colors"
-          >
-            <LogOut size={20} />
+          <button onClick={() => setCurrentUser(null)} className="logout-button" title="Sair">
+            <LogOut />
           </button>
         </div>
         
-        <div className="flex-1 overflow-y-auto">
+        <div className="contacts-header">
+          <h2 className="contacts-title">Conversas</h2>
+        </div>
+        
+        <div className="contacts-list">
           {contacts.map(contact => (
             <div
               key={contact.id}
               onClick={() => handleSelectContact(contact)}
-              className={`p-4 border-b border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors ${
-                selectedContact?.id === contact.id ? 'bg-blue-50' : ''
-              }`}
+              className={`contact-item ${selectedContact?.id === contact.id ? 'active' : ''}`}
             >
-              <div className="flex items-center gap-3">
-                <div className="bg-gray-300 rounded-full p-2">
-                  <User size={24} />
+              <div className="contact-content">
+                <div className="contact-avatar-wrapper">
+                  <div className="contact-avatar">
+                    <User />
+                  </div>
+                  <div className="contact-status-dot"></div>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-gray-800">{contact.username}</h3>
+                <div className="contact-info">
+                  <h3 className="contact-name">{contact.username}</h3>
+                  <p className="contact-action">Clique para conversar</p>
                 </div>
               </div>
             </div>
@@ -201,44 +233,38 @@ export default function MessagingApp() {
       </div>
 
       {/* Chat Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="chat-area">
         {selectedContact ? (
           <>
             {/* Chat Header */}
-            <div className="bg-white border-b border-gray-200 p-4 shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="bg-blue-100 rounded-full p-2">
-                  <User size={24} className="text-blue-600" />
+            <div className="chat-header">
+              <div className="chat-header-content">
+                <div className="chat-avatar-wrapper">
+                  <div className="chat-avatar">
+                    <User />
+                  </div>
+                  <div className="chat-status-dot"></div>
                 </div>
-                <div>
-                  <h2 className="font-semibold text-lg">{selectedContact.username}</h2>
-                  <p className="text-xs text-green-600">Online</p>
+                <div className="chat-user-info">
+                  <h2>{selectedContact.username}</h2>
+                  <p className="chat-online-status">
+                    <span className="chat-online-dot"></span>
+                    Online agora
+                  </p>
                 </div>
               </div>
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
+            <div className="messages-container">
               {messages.map(msg => (
                 <div
                   key={msg.id}
-                  className={`flex mb-3 ${
-                    msg.sender_id === currentUser.id ? 'justify-end' : 'justify-start'
-                  }`}
+                  className={`message-wrapper ${msg.sender_id === currentUser.id ? 'sent' : 'received'}`}
                 >
-                  <div
-                    className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl shadow ${
-                      msg.sender_id === currentUser.id
-                        ? 'bg-blue-600 text-white rounded-br-none'
-                        : 'bg-white text-gray-800 rounded-bl-none'
-                    }`}
-                  >
-                    <p className="break-words">{msg.message}</p>
-                    <p
-                      className={`text-xs mt-1 ${
-                        msg.sender_id === currentUser.id ? 'text-blue-100' : 'text-gray-500'
-                      }`}
-                    >
+                  <div className={`message-bubble ${msg.sender_id === currentUser.id ? 'sent' : 'received'}`}>
+                    <p className="message-text">{msg.message}</p>
+                    <p className="message-time">
                       {new Date(msg.created_at).toLocaleTimeString('pt-BR', { 
                         hour: '2-digit', 
                         minute: '2-digit' 
@@ -251,31 +277,34 @@ export default function MessagingApp() {
             </div>
 
             {/* Input */}
-            <div className="bg-white border-t border-gray-200 p-4">
-              <div className="flex gap-2 items-end">
+            <div className="input-container">
+              <div className="input-wrapper">
                 <textarea
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Digite uma mensagem..."
-                  className="flex-1 resize-none border border-gray-300 rounded-2xl px-4 py-2 focus:outline-none focus:border-blue-500 max-h-32"
+                  placeholder="Digite sua mensagem..."
+                  className="message-input"
                   rows="1"
                 />
                 <button
                   onClick={handleSend}
-                  className="bg-blue-600 text-white rounded-full p-3 hover:bg-blue-700 transition-colors disabled:bg-gray-300"
+                  className="send-button"
                   disabled={!inputText.trim()}
                 >
-                  <Send size={20} />
+                  <Send />
                 </button>
               </div>
             </div>
           </>
         ) : (
-          <div className="flex-1 flex items-center justify-center bg-gray-50">
-            <div className="text-center text-gray-400">
-              <MessageSquare size={64} className="mx-auto mb-4" />
-              <p className="text-lg">Selecione um contato para começar a conversar</p>
+          <div className="empty-state">
+            <div className="empty-state-content">
+              <div className="empty-state-icon">
+                <MessageSquare />
+              </div>
+              <p className="empty-state-title">Selecione uma conversa</p>
+              <p className="empty-state-subtitle">Escolha um contato para começar a conversar</p>
             </div>
           </div>
         )}
